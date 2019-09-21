@@ -18,17 +18,28 @@ module.exports = function(app) {
             const userid = req.body.userid;
             let objectid = new dbSettings.ObjectID(userid);
 
-            collection.deleteOne({_id: objectid}, (err, docs) => {
+            collection.find({_id: objectid}).limit(1).toArray((err, data) => {
                 if(err) return res.send(err);
-                
-                if(docs.deletedCount) 
-                    return res.send({'delete': true});
-                else {
+
+                if(data[0].username == 'super'){
                     return res.send({
                         'delete': false,
-                        'comment': 'user does not exist'
+                        'comment': 'cannot delete super'
                     });
                 }
+                
+                collection.deleteOne({_id: objectid}, (err, docs) => {
+                    if(err) return res.send(err);
+                    
+                    if(docs.deletedCount) 
+                        return res.send({'delete': true});
+                    else {
+                        return res.send({
+                            'delete': false,
+                            'comment': 'user does not exist'
+                        });
+                    }
+                });
             });
         });
     });

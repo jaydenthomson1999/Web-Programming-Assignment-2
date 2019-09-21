@@ -15,11 +15,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-//user api
-require(__dirname + '/api/login.js')(app); //mongo done
-require(__dirname + '/api/add-user.js')(app); //mongo
-require(__dirname + '/api/get-users.js')(app); //mongo done
-require(__dirname + '/api/del-user.js')(app); //mongo done
+//user api // mongo refactor done
+require(__dirname + '/api/login.js')(app); 
+require(__dirname + '/api/add-user.js')(app); 
+require(__dirname + '/api/get-users.js')(app);
+require(__dirname + '/api/del-user.js')(app); 
 
 //group api
 require(__dirname + '/api/add-group.js')(app, fs);
