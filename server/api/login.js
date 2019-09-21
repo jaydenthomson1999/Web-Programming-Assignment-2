@@ -1,37 +1,38 @@
 /*  Finds user in user.json file and checks to see 
     if there password matches one on record
 */
-module.exports = function(app, fs) {
-    app.post('/api/login', (req, res) => {
-        let {username, password} = req.body;
-        let ok = false;
-        
-        fs.readFile(__dirname + '/../users.json', (err, data) => {
-            if (err) {
-                res.json({'err': err});
-            }
-            else {
-                let users = JSON.parse(data);
-                
-                for(user in users.users) {
-                    if(users.users[user].username == username) {
-                        if(users.users[user].password == password) {
-                            ok = true;
-                            delete users.users[user].password;
 
-                            res.json({
-                                'ok': true, 
-                                'user': users.users[user]
-                            });
-                        }
-                        else 
-                            break;
+// _id: 5d85e53edfd0b3564450d884
+
+module.exports = function(app, fs) {
+    const dbSettings = require('../db-settings');
+
+    app.post('/api/login', (req, res) => {
+        if(!req.body) return res.sendStatus(400);
+
+        dbSettings.MongoClient.connect(dbSettings.url, 
+            {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+            function(err, client) {
+                const db = client.db(dbSettings.dbName);
+                const collection = db.collection('users');
+                let {userid, password} = req.body;
+                let objectid = new dbSettings.ObjectID(userid);
+
+                collection.find({_id: objectid, password: password}).limit(1).toArray((err, data) => {
+                    if(data.length) {
+                        delete data[0].password;
+
+                        res.send({
+                            'ok': true,
+                            'user': data[0]
+                        });
+                    } else {
+                        res.send({
+                            'ok': false,
+                            'comment': "username or password was incorrect"
+                        });
                     }
-                }
-                
-                if(!ok)
-                    res.json({'ok': false});
-            }
+                });
         });
     });
 }
