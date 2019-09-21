@@ -2,51 +2,34 @@
     Finds user in user.json and removes it from the file
 */
 
-module.exports = function(app, fs) {
+module.exports = function(app) {
+    const dbSettings = require('../db-settings');
+
     app.delete('/api/del-user', (req, res) => {
-        let foundUser = false;
-        let userIndex;
+        if(!req.body) return res.sendStatus(400);
 
-        console.log(req.body);
+        dbSettings.MongoClient.connect(dbSettings.url, 
+        {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+        function(err, client) {
+            if(err) throw new Error(err);
 
-        fs.readFile(__dirname + '/../users.json', (err, data) => {
-            if (err) {
-                console.log(err)
-                res.json({'err': err});
-            } else {
-                let users = JSON.parse(data);
+            const db = client.db(dbSettings.dbName);
+            const collection = db.collection('users');
+            const userid = req.body.userid;
+            let objectid = new dbSettings.ObjectID(userid);
 
-                for(user in users.users) {
-                    if(users.users[user].username === req.body.username) {
-                        foundUser = true;
-                        userIndex = user;
-                        break;
-                    }
-                }
-
-                if(foundUser) {
-                    if( users.users[userIndex].type !== 'super') {
-
-                        users.users.splice(userIndex,1);
-                        fs.writeFile(__dirname + '/../users.json', 
-                        JSON.stringify(users), err => {
-                            if(err) {
-                                console.log(err);
-                                res.json({'err': err});
-                                return;
-                            } else {
-                                res.json({'delete': true});
-                                return;
-                            }
-                        });
-                    }
-                } else {
-                    res.json({
+            collection.deleteOne({_id: objectid}, (err, docs) => {
+                if(err) return res.send(err);
+                
+                if(docs.deletedCount) 
+                    return res.send({'delete': true});
+                else {
+                    return res.send({
                         'delete': false,
-                        'comment': 'user does not exists'
+                        'comment': 'user does not exist'
                     });
                 }
-            }
+            });
         });
     });
 }

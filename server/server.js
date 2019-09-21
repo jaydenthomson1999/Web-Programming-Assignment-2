@@ -16,10 +16,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 //user api
-require(__dirname + '/api/login.js')(app, fs);
-require(__dirname + '/api/add-user.js')(app, fs);
-require(__dirname + '/api/get-users.js')(app, fs);
-require(__dirname + '/api/del-user.js')(app, fs);
+require(__dirname + '/api/login.js')(app); //mongo done
+require(__dirname + '/api/add-user.js')(app); //mongo
+require(__dirname + '/api/get-users.js')(app); //mongo done
+require(__dirname + '/api/del-user.js')(app); //mongo done
 
 //group api
 require(__dirname + '/api/add-group.js')(app, fs);

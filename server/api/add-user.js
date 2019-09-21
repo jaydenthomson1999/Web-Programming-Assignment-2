@@ -2,39 +2,35 @@
     if it doesn't, they will be added as a new user
 */
 
-module.exports = function(app, fs) {
+module.exports = function(app) {
+    const dbSettings = require('../db-settings');
+
     app.put('/api/add-user', (req, res) => {
-        let new_user = req.body;
+        if(!req.body) return res.sendStatus(400);
 
-        fs.readFile(__dirname + '/../users.json', (err, data) => {
-            if (err) {
-                console.log(err);
-                res.json({'err': err});
-            }
-            else {
-                //check if user exits
-                let users = JSON.parse(data);
+        dbSettings.MongoClient.connect(dbSettings.url, 
+        {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+        function(err, client) {
+            if(err) throw new Error(err);
 
-                for(user in users.users) {
-                    if(users.users[user].username == new_user.username) {
-                        res.json({'add': false});
-                        return;
-                    }
+            const db = client.db(dbSettings.dbName);
+            const collection = db.collection('users');
+            let new_user = req.body;
+            new_user.groupList = [];
+            new_user.adminGroupList = [];
+
+            //check if username exists
+            collection.find({username: new_user.username})
+            .count((err, count) => {
+                if(count == 0) {
+                    collection.insertOne(new_user, (err, dbres) => {
+                        if(err) return res.send(err);
+                        return res.send({'add': true});
+                    });
+                } else {
+                    res.send({'add': false});
                 }
-                new_user.groupList = [];
-                new_user.adminGroupList = [];
-                users.users.push(new_user);
-
-                fs.writeFile(__dirname + '/../users.json', JSON.stringify(users)
-                , err => {
-                    if(err) {
-                        console.log(err);
-                        res.json({'err': err});
-                    } else{
-                        res.json({'add': true});
-                    }
-                });
-            }
+            });
         });
     }); 
 }
