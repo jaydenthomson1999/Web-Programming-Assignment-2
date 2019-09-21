@@ -1,0 +1,45 @@
+<nav class="navbar navbar-light bg-light">
+  <span class="navbar-brand mb-0 h1">Group List</span>
+</nav>
+
+<div class="d-flex">
+    <ul class="list-group w-50">
+      <button *ngFor="let group of adminGroupList" (click)="selectGroup(group)" type="button" class="list-group-item list-group-item-action">
+          {{group}}
+          
+          <button (click)="deleteGroup(group)" type="button" class="btn btn-light float-right">DELETE</button>
+          <button (click)="apiModal('Delete', 'group', group)" type="button" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">DELETE USER</button>
+          <button (click)="apiModal('Add', 'group', group)" type="button" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">ADD USER</button>
+      </button>
+    </ul>
+    <ul class="list-group w-50">
+      <button *ngFor="let channel of channelList" type="button" class="list-group-item list-group-item-action">
+          {{channel}}
+          <button (click)="apiModal('Delete', 'channel', channel)" type="button" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">DELETE USER</button>
+          <button (click)="apiModal('Add', 'channel', channel)" type="button" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">ADD USER</button>
+      </button>
+    </ul>
+</div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="apiModal" tabindex="-1" role="dialog" aria-labelledby="apiModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="apiModalLabel">{{operation}} User</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="list-group">
+              <button (click)="selectUser(user)" *ngFor="let user of modalList" type="button" class="list-group-item list-group-item-action">{{user}}</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button (click)="modalConfirm()" type="button" class="btn btn-primary" data-dismiss="modal">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>

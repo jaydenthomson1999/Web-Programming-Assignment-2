@@ -1,0 +1,13 @@
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand">User List</a>
+    <div class="form-inline">
+      <button routerLink="/user-add" class="btn btn-outline-primary my-2 my-sm-0" type="submit">Add</button>
+    </div>
+</nav>
+
+<ul class="list-group">
+    <li *ngFor="let user of users" class="list-group-item">
+      {{user.username}} {{user.email}} {{user.type}}
+      <button *ngIf="loggedUser.type == 'super'" (click)="delUser(user.username)" type="button" class="btn btn-light float-right">DELETE</button>
+    </li>
+</ul>

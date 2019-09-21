@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div id="navbarSupportedContent">
+      <ul class="navbar-nav">
+          <li class="navbar-brand mb-0 h1">{{user.username}}</li>
+          <div class="form-inline pr-3">
+              <label for="exampleFormControlSelect1">Group</label>
+              <select [(ngModel)]="selectedGroup" (change)="groupSelected()" class="form-control ml-1" id="exampleFormControlSelect1">
+                <option *ngFor='let group of groupList'>{{group.groupName}}</option>
+              </select>
+              <button *ngIf="privilege" (click)="addGroupModal()" type="button" class="btn btn-primary btn-sm ml-1" data-toggle="modal" data-target="#myModal">+</button>
+            </div>
+          <div class="form-inline pr-3">
+              <label for="exampleFormControlSelect1">Channel</label>
+              <select [(ngModel)]="selectedChannel" class="form-control ml-1" id="exampleFormControlSelect1">
+                <option *ngFor="let channel of channelList">{{channel}}</option>
+              </select>
+              <button *ngIf="selectedGroup != undefined && privilege" (click)="addChannelModal()" data-toggle="modal" data-target="#myModal" type="button" class="btn btn-primary btn-sm ml-1">+</button>
+            </div>
+          <div *ngIf="privilege" class="form-inline active mr-3">
+              <button (click)="gotoGroups()" type="button" class="btn btn-outline-dark float-right btn">My Groups</button>
+              <button (click)="goto_users()" type="button" class="btn btn-outline-dark btn ml-3">Users</button>
+          </div>
+          <button (click)="logout()" type="button" class="btn btn-outline-dark float-right btn">Logout</button>
+      </ul>
+    </div>
+</nav>
+
+<div id="messages">
+  <div class="bg-light">
+    <div class="input-group mb-3">
+      <input [(ngModel)]="messageIn" name="messageIn" type="text" class="form-control" placeholder="Message Chat" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button (click)="chat()" class="btn btn-outline-secondary" type="button">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-auto">
+    <ul id="message-list" class="list-group">
+      <li *ngFor="let message of messages" class="list-group-item">{{message}}</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{modalTitle}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="input-group mb-4">
+          <input [(ngModel)]="modalInput" type="text" class="form-control" placeholder="Group Name" aria-label="Recipient's username" aria-describedby="basic-addon2">
+          <div class="input-group-append">
+            <button (click)="modalAdd()" data-dismiss="modal" aria-label="Close" class="btn btn-outline-secondary" type="button">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

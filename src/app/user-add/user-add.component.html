@@ -1,0 +1,34 @@
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand">Add User</a>
+</nav>
+
+<form>
+    <div class="form-group">
+      <label for="exampleInputUsername">Username</label>
+      <input [(ngModel)]="username" name="username" type="username" class="form-control" id="exampleInputUsername" placeholder="Username">
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputPassword1">Password</label>
+      <input [(ngModel)]="password" name="password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">Email address</label>
+      <input [(ngModel)]="email" name="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+    </div>
+
+    <div class="form-group">
+      <label for="exampleFormControlSelect1">User Type</label>
+      <select [(ngModel)]="type" name="type" class="form-control" id="exampleFormControlSelect1">
+        <option>Basic</option>
+        <option>Group Assistant</option>
+        <option>Group Admin</option>
+      </select>
+    </div>
+
+    <div class="form-inline">
+      <button (click)="add_user()" type="submit" class="btn btn-success btn-lg">Submit</button>
+      <button (click)="go_back()" type="button" class="btn btn-danger btn-lg">Cancel</button>
+    </div>
+  </form>
