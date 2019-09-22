@@ -23,7 +23,7 @@ require(__dirname + '/api/del-user.js')(app);
 
 //group api
 require(__dirname + '/api/add-group.js')(app); // mongo done
-require(__dirname + '/api/get-groups.js')(app, fs);
+require(__dirname + '/api/get-groups.js')(app); // mongo done
 require(__dirname + '/api/add-channel.js')(app, fs);
 require(__dirname + '/api/del-group.js')(app, fs);
 
