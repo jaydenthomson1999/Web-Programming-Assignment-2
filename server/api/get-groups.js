@@ -2,34 +2,38 @@
     Returns the list of groups and admin groups of a specified user
 */
 
-module.exports = function(app, fs) {
+module.exports = function(app) {
+    const dbSettings = require('../db-settings');
+
     app.post('/api/get-groups', (req, res) => {
-        let { username } = req.body;
-        console.log(username);
+        if(!req.body) return res.sendStatus(400);
 
-        fs.readFile(__dirname + '/../users.json', (err, data) => {
-            if(err){
-                res.json({'err': err});
-            }
-            else {
-                // find username in user.json
-                let users = JSON.parse(data);
+        dbSettings.MongoClient.connect(dbSettings.url, 
+        {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+        function(err, client) {
+            if(err) throw new Error(err);
 
-                for(user in users.users) {
-                    console.log(users.users[user]);
-                    if(users.users[user].username === username) {
-                        res.json({
-                            'ok': true,
-                            'groupList': users.users[user].groupList, 
-                            'adminGroupList': users.users[user].adminGroupList
-                        });
+            const db = client.db(dbSettings.dbName);
+            const collection = db.collection('users');
+            const userid = req.body.userid;
+            let objectid = new dbSettings.ObjectID(userid);
 
-                        return;
-                    }
+            collection.find({_id: objectid}).limit(1).toArray((err, data) => {
+                if(err) return res.send(err);
+
+                if(data.length == 0) {
+                    return res.send({
+                        'ok': false, 
+                        'comment': 'user doesnt exist'
+                    });
                 }
 
-                res.json({'ok': false});
-            }
+                return res.send({
+                    'ok': true,
+                    'groupList': data[0].groupList,
+                    'adminGroupList': data[0].adminGroupList
+                });
+            });
         });
     });
 }
