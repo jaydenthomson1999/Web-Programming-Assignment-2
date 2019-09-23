@@ -21,11 +21,11 @@ module.exports = function(app) {
 
             // need to check if user has group in adminGroupList
             collection.find({
-                    $and: [
-                        { _id: objectid },
-                        { adminGroupList: group }
-                    ]
-                })
+                $and: [
+                    { _id: objectid },
+                    { adminGroupList: group }
+                ]
+            })
             .limit(1).toArray((err, data) => {
                 if(err) return res.send(err);
 
@@ -54,8 +54,17 @@ module.exports = function(app) {
                                     "groupList.$.channels": channel
                                 }
                             },
-                            () => {
-                                return res.send({'add': true});
+                            (err, records) => {
+                                if(err) return res.send(err);
+
+                                if(records.result.nModified) {
+                                    return res.send({'add': true});
+                                } else {
+                                    return res.send({
+                                        'add': false, 
+                                        'comment': 'error adding to database'
+                                    });
+                                }
                             }
                         );
                     }

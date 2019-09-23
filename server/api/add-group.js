@@ -52,8 +52,17 @@ module.exports = function(app) {
                                     {groupList: groupItem, 
                                     adminGroupList: group }
                                 },
-                                () => {
-                                    return res.send({'add': true});
+                                (err, records) => {
+                                    if(err) return res.send(err);
+                                    
+                                    if(records.result.nModified) {
+                                        return res.send({'add': true});
+                                    } else {
+                                        return res.send({
+                                            'add': false, 
+                                            'comment': 'error adding to database'
+                                        });
+                                    }
                                 }
                             );
                         } else {

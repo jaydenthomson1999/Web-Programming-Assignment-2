@@ -2,64 +2,71 @@
     If username is a group admin of the group name it will be deleted
     from every users group list if it exists
 */
-module.exports = function(app, fs) {
+module.exports = function(app) {
+    const dbSettings = require('../db-settings');
+
     app.delete('/api/del-group', (req, res) => {
-        let { username, groupName } = req.body;
-        let adminConfirm = false;
+        if(!req.body) return res.sendStatus(400);
+        dbSettings.MongoClient.connect(dbSettings.url, 
+        {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+        function(err, client) {
+            if(err) throw new Error(err);
 
-        fs.readFile(__dirname + '/../users.json', (err, data) => {
-            if(err) {
-                console.log(err);
-                res.json({'err': err});
-            } else {
-                let users = JSON.parse(data);
+            const db = client.db(dbSettings.dbName);
+            const collection = db.collection('users');
+            const group = req.body.groupName;
+            const userid = req.body.userid;
+            let objectid = new dbSettings.ObjectID(userid);
 
-                // find user
-                for(user in users.users) {
-                    if(users.users[user].username === username) {
-                        // check if user has groupName in admin list
-                        for(group in users.users[user].adminGroupList) {
-                            if(users.users[user].adminGroupList[group] 
-                                === groupName) {
-                                    adminConfirm = true;
-                                    users.users[user].adminGroupList
-                                        .splice(group, 1);
+            //find user id and check if they are admin
+            collection.find({
+                $and: [
+                    { _id: objectid },
+                    { adminGroupList: group }
+                ]
+            })
+            .limit(1).toArray((err, data) => {
+                if(err) return res.send(err);
+
+                if(data.length == 0) {
+                    return res.send({
+                        'add': false, 
+                        'comment': 'user doesnt exist or does not have permission'
+                    });
+                }
+
+                collection.updateOne(
+                    {_id: objectid},
+                    {$pull: {adminGroupList: group}},
+                    (err, data) => {
+                        if(err) return res.send(err);
+                        if(data.result.nModified) {
+                            //delete group from all users
+                            collection.updateMany(
+                                { groupList: {$elemMatch: {groupName: group}}},
+                                {$pull: {groupList: {groupName: group}}},
+                                (err, data) => {
+                                    if(err) return res.send(err);
+
+                                    if(data.result.nModified) {
+                                        return res.send({'delete': true});
+                                    } else {
+                                        return res.send({
+                                            'add': false, 
+                                            'comment': 'error deleting from database user group list'
+                                        });
+                                    }
                                 }
-                        }
-                    }
-                }
-
-                if(adminConfirm) {
-                    // loop through users and delete group from groupList
-                    // NOTE this is a very slow method O(N^2) nested loop
-                    for(user in users.users) {
-                        for(group in users.users[user].groupList) {
-                            if(users.users[user].groupList[group].groupName 
-                                === groupName) {
-                                    users.users[user].groupList.splice(group, 1);                                                                                                              
-                            }
-                        }
-                    }
-
-                    // write new json file
-                    fs.writeFile(__dirname + '/../users.json',
-                    JSON.stringify(users), err => {
-                        if(err) {
-                            console.log(err);
-                            res.json({'err': err});
-                            return;
+                            );
                         } else {
-                            res.json({'delete': true});
-                            return;
+                            return res.send({
+                                'add': false, 
+                                'comment': 'error deleting from database admin list'
+                            });
                         }
-                    });
-                } else {
-                    res.json({
-                        'delete': false,
-                        'comment': 'is not admin or group doesn\'t exist'
-                    });
-                }
-            }
+                    }
+                );
+            });
         });
     });
 }
