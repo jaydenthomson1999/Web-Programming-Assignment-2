@@ -21,6 +21,13 @@ module.exports = function(app) {
             collection.find({_id: objectid}).limit(1).toArray((err, data) => {
                 if(err) return res.send(err);
 
+                if(data.length === 0) {
+                    return res.send({
+                        'delete': false,
+                        'comment': 'user does not exist'
+                    });
+                }
+
                 if(data[0].username == 'super'){
                     return res.send({
                         'delete': false,

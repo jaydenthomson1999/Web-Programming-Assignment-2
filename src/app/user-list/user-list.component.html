@@ -8,6 +8,6 @@
 <ul class="list-group">
     <li *ngFor="let user of users" class="list-group-item">
       {{user.username}} {{user.email}} {{user.type}}
-      <button *ngIf="loggedUser.type == 'super'" (click)="delUser(user.username)" type="button" class="btn btn-light float-right">DELETE</button>
+      <button *ngIf="loggedUser.type == 'super'" (click)="delUser(user._id)" type="button" class="btn btn-light float-right">DELETE</button>
     </li>
 </ul>
