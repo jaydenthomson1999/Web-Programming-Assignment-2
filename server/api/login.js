@@ -2,8 +2,6 @@
     if there password matches one on record
 */
 
-// _id: 5d85ff71086c942b80832d10
-
 module.exports = function(app) {
     const dbSettings = require('../db-settings');
 
@@ -17,10 +15,8 @@ module.exports = function(app) {
 
             const db = client.db(dbSettings.dbName);
             const collection = db.collection('users');
-            let {userid, password} = req.body;
-            let objectid = new dbSettings.ObjectID(userid);
-
-            collection.find({_id: objectid, password: password}).limit(1)
+            let {username, password} = req.body;
+            collection.find({username: username, password: password}).limit(1)
             .toArray((err, data) => {
                 if(err) return res.send(err);
 

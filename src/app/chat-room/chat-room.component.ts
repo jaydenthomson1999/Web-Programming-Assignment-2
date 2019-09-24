@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { UserService } from '../user/user.service';
 
 interface Put {
   add: boolean;
@@ -36,7 +37,9 @@ export class ChatRoomComponent implements OnInit {
   private selectedGroup: string;
   private selectedChannel: string;
 
-  constructor(private router: Router, private http: HttpClient) {
+  constructor(private router: Router,
+              private http: HttpClient,
+              private userService: UserService) {
     this.user = JSON.parse(sessionStorage.getItem('user'));
     if (this.user === null) {
       this.router.navigateByUrl('/');
@@ -65,90 +68,56 @@ export class ChatRoomComponent implements OnInit {
   // adds group or channel
   modalAdd() {
     if (this.modalTitle === 'Add Group') {
-      // add group api
-      const data = new Promise((resolve, reject) => {
-        this.http.put<Put>(this.addGroupUrl,
-          { groupName: this.modalInput,
-            username: (JSON.parse(sessionStorage.getItem('user')).username)
-          }).subscribe(
-            res => {
-              if (res.add) {
-                resolve(res.add);
-              } else {
-                resolve(false);
-              }
-            },
-            (err: HttpErrorResponse) => {
-              console.log(err.error);
-              reject(err.error);
-            }
-        );
-      });
-
-      data.then(bool => {
-        if (bool) {
-          // get user groups
-          this.get_groups();
-        } else {
-          alert('Couldn\'t add group');
-        }
-      });
-    } else {
-      // add channel api
-      const data = new Promise((resolve, reject) => {
-        this.http.put<Put>(this.addChannelUrl, {
-          username: this.user.username,
-          groupName: this.selectedGroup,
-          channelName: this.modalInput
-        }).subscribe(
+      this.userService.addGroup(
+        JSON.parse(sessionStorage.getItem('user'))._id, this.modalInput)
+        .subscribe(
           res => {
             if (res.add) {
-              resolve(res.add);
+              this.get_groups();
             } else {
-              resolve(false);
+              alert(res.comment);
             }
           },
           (err: HttpErrorResponse) => {
-            console.log(err.error);
-            reject(err.error);
+            alert(err.error);
           }
         );
-      });
-
-      data.then(bool => {
-        if (bool) {
-          this.get_groups();
-        } else {
-          alert('Couldn\'t add channel');
+    } else {
+      this.userService.addChannel(
+        JSON.parse(sessionStorage.getItem('user'))._id,
+        this.selectedGroup,
+        this.modalInput
+      ).subscribe(
+        res => {
+          if (res.add) {
+            this.get_groups();
+          } else {
+            alert(res.comment);
+          }
+        },
+        (err: HttpErrorResponse) => {
+          alert(err.error);
         }
-      });
+      );
     }
   }
 
   // uses get request to update groupList and adminGroup list
   get_groups() {
-    const data = new Promise<any>((resolve, reject) => {
-      this.http.post<Get>(this.getGroupUrl, {
-        username: (JSON.parse(sessionStorage.getItem('user')).username)
-      }).subscribe(
-        res => {
-          if (res.ok) {
-            resolve(res);
-          } else {
-            resolve(false);
-          }
-        },
-        (err: HttpErrorResponse) => {
-          console.log(err.error);
-          reject(err.error);
+    this.userService.getGroup(JSON.parse(sessionStorage.getItem('user'))._id)
+    .subscribe(
+      res => {
+        if (res.ok) {
+          this.adminGroupList = res.adminGroupList;
+          this.groupList = res.groupList;
+        } else {
+          alert(res.comment);
         }
-      );
-    });
-
-    data.then(json => {
-      this.adminGroupList = json.adminGroupList;
-      this.groupList = json.groupList;
-    });
+      },
+      (err: HttpErrorResponse) => {
+        alert(err.error);
+      }
+    );
   }
 
   // changes which group is selected

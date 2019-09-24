@@ -15,8 +15,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-//user api // mongo refactor done
+
 require(__dirname + '/api/login.js')(app); 
+
+//user api // mongo refactor done
 require(__dirname + '/api/add-user.js')(app); 
 require(__dirname + '/api/get-users.js')(app);
 require(__dirname + '/api/del-user.js')(app); 
