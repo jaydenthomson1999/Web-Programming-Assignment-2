@@ -30,7 +30,7 @@ module.exports = function(app) {
 
                 if(data.length == 0) {
                     return res.send({
-                        'add': false, 
+                        'delete': false, 
                         'comment': 'user doesnt exist or does not have permission'
                     });
                 }
@@ -52,7 +52,7 @@ module.exports = function(app) {
                                         return res.send({'delete': true});
                                     } else {
                                         return res.send({
-                                            'add': false, 
+                                            'delete': false, 
                                             'comment': 'error deleting from database user group list'
                                         });
                                     }
@@ -60,7 +60,7 @@ module.exports = function(app) {
                             );
                         } else {
                             return res.send({
-                                'add': false, 
+                                'delete': false, 
                                 'comment': 'error deleting from database admin list'
                             });
                         }

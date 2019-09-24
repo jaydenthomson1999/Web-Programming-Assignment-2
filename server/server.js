@@ -29,7 +29,7 @@ require(__dirname + '/api/del-group.js')(app); // need to check
 
 //users in groups
 require(__dirname + '/api/add-user-to-group.js')(app); //mongo refactor
-require(__dirname + '/api/add-user-to-channel.js')(app);
+require(__dirname + '/api/add-user-to-channel.js')(app); // mongo refactor
 require(__dirname + '/api/del-user-from-group.js')(app, fs);
 require(__dirname + '/api/del-user-from-channel.js')(app, fs);
 
