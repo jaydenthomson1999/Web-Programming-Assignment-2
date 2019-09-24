@@ -40,8 +40,10 @@ module.exports = function(app) {
                 collection.find({
                     $and: [
                         { _id: objectid },
-                        { groupList: {$elemMatch: {groupName: group}}},
-                        { groupList: {$elemMatch: {channels: channel}}}
+                        { groupList: {$elemMatch: {
+                            groupName: group, 
+                            channels: channel
+                        }}}
                     ]
                 }).count((err, count) => {
                     if(err) return res.send(err);
@@ -67,6 +69,11 @@ module.exports = function(app) {
                                 }
                             }
                         );
+                    } else {
+                        return res.send({
+                            'add': false, 
+                            'comment': 'channel already exists'
+                        });
                     }
                 });
             });

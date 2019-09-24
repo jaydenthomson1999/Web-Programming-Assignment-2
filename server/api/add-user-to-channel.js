@@ -3,117 +3,86 @@
  * adminUser is an admin of the group
  */
 
-module.exports = function(app, fs) {
+module.exports = function(app) {
+    const dbSettings = require('../db-settings');
+
     app.put('/api/add-user-to-channel', (req, res) => {
-        let { adminUser, addUser, groupName, channelName } = req.body;
-        let adminOk = false;
-        let channelExist = false;
+        if(!req.body) return res.sendStatus(400);
 
-        let foundAddUser = false;
-        let userIndex;
+        dbSettings.MongoClient.connect(dbSettings.url, 
+        {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+        function(err, client) {
+            if(err) throw new Error(err);
 
-        let isGroupMember = false;
-        let groupIndex;
+            const db = client.db(dbSettings.dbName);
+            const collection = db.collection('users');
+            const group = req.body.groupName;
+            const channel = req.body.channelName;
+            let adminid = new dbSettings.ObjectID(req.body.adminid);
+            let userid = new dbSettings.ObjectID(req.body.userid);
 
-        let isChannelMember = false;
+            // check if admin has group in adminGroupList
+            collection.find({
+                $and: [
+                    { _id: adminid },
+                    { adminGroupList: group },
+                    { groupList: {$elemMatch: {
+                        groupName: group, 
+                        channels: channel
+                    }}}
+                ]
+            })
+            .count((err, count) => {
+                if(err) return res.send(err);
 
-        // open file
-        fs.readFile(__dirname + '/../users.json', (err, data) => {
-            if(err) {
-                console.log(err);
-                res.json({'err': err});
-            } 
-            else {
-                let users = JSON.parse(data);
-
-                // check if adminUser has groupName in there admin list
-                for(user in users.users) {
-                    if(users.users[user].username == adminUser) {
-                        for(group in users.users[user].adminGroupList){
-                            if(users.users[user].adminGroupList[group]
-                                == groupName) {
-                                    adminOk = true;
-                                    break;
-                                }
-                        }
-
-                        // check if channel exists
-                        for(group in users.users[user].groupList) {
-                            if(users.users[user].groupList[group].
-                                groupName == groupName) {
-                                    for(channel in users.users[user].
-                                        groupList[group].channels) {
-                                            if(users.users[user].
-                                                groupList[group].
-                                                channels[channel] 
-                                                == channelName) {
-                                                    channelExist = true;
-                                                }
-                                        }
-                                }
-                        }
-                        break;
-                    }
-                }
-
-                if(adminOk && channelExist) {
-                    // check if add user exists
-                    for(user in users.users) {
-                        if(users.users[user].username == addUser) {
-                            foundAddUser = true;
-                            userIndex = user;
-
-                            // check if group memeber
-                            for(group in users.users[user].groupList) {
-                                if(users.users[user].groupList[group].groupName
-                                    == groupName) {
-                                        isGroupMember = true;
-                                        groupIndex = group;
-
-                                        //check if channel memeber
-                                        for(channel in users.users[user].
-                                            groupList[group].channels) {
-                                            if(users.users[user].
-                                                groupList[group].
-                                                channels[channel]
-                                                == channelName) {
-                                                    isChannelMember = true;
-                                                }
-                                        }
+                if(count === 1) {
+                    // check if channel exists in group
+                    collection.find({
+                        $and: [
+                            { _id: userid },
+                            { groupList: {$elemMatch: {
+                                groupName: group, 
+                                channels: channel
+                            }}}
+                        ]
+                    })
+                    .count((err, count) => {
+                        if(err) return res.send(err);
+                        if(count === 0) {
+                            // add channel
+                            collection.updateOne(
+                                {_id: userid, "groupList.groupName": group},
+                                { $push: {
+                                        "groupList.$.channels": channel
                                     }
-                            }                            
+                                },
+                                (err, records) => {
+                                    if(err) return res.send(err);
 
-                            break;
-                        }
-                    }
-
-                    if(foundAddUser && isGroupMember && !isChannelMember) {
-                        users.users[userIndex].groupList[groupIndex].
-                            channels.push(channelName);
-                        
-                        // write to file
-                        fs.writeFile(__dirname + '/../users.json',
-                            JSON.stringify(users), err => {
-                                if(err) {
-                                    console.log(err);
-                                    res.json({'err': err});
-                                } else{
-                                    res.json({'add': true});
+                                    if(records.result.nModified) {
+                                        return res.send({'add': true});
+                                    } else {
+                                        return res.send({
+                                            'add': false, 
+                                            'comment': 'error adding to database'
+                                        });
+                                    }
                                 }
-                        });
-                    } else {
-                        res.json({
-                            'add': false,
-                            'comment': 'cannnot add user to channel'
-                        });
-                    }
+                            );
+                        } else {
+                            return res.send({
+                                'add': false, 
+                                'comment': 'user already in channel'
+                            });
+                        }
+                    });
                 } else {
-                    res.json({
-                        'add': false,
-                        'comment': 'admin does not have priviledge'
+                    return res.send({
+                        'add': false, 
+                        'comment': 'admin doesnt exist or doesnt have permission'
                     });
                 }
-            }
+            });
         });
     });
 }
