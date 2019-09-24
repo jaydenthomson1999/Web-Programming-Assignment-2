@@ -25,13 +25,13 @@ require(__dirname + '/api/del-user.js')(app);
 require(__dirname + '/api/add-group.js')(app);
 require(__dirname + '/api/get-groups.js')(app); 
 require(__dirname + '/api/add-channel.js')(app);
-require(__dirname + '/api/del-group.js')(app); // need to check
+require(__dirname + '/api/del-group.js')(app);
 
-//users in groups
-require(__dirname + '/api/add-user-to-group.js')(app); //mongo refactor
-require(__dirname + '/api/add-user-to-channel.js')(app); // mongo refactor
-require(__dirname + '/api/del-user-from-group.js')(app, fs);
-require(__dirname + '/api/del-user-from-channel.js')(app, fs);
+//users in groups // mongo refactor done
+require(__dirname + '/api/add-user-to-group.js')(app);
+require(__dirname + '/api/add-user-to-channel.js')(app);
+require(__dirname + '/api/del-user-from-group.js')(app);
+require(__dirname + '/api/del-user-from-channel.js')(app);
 
 //Start server listening for requests
 server.listen(http, PORT);

@@ -3,100 +3,86 @@
  * channel they will be deleted from the channel
  */
 
-module.exports = function(app, fs) { 
+module.exports = function(app) { 
+    const dbSettings = require('../db-settings');
+
     app.delete('/api/del-user-from-channel', (req, res) => {
-        let { adminUser, delUser, groupName, channelName } = req.body;
-        let adminPriviledge = false;
-        let userIndex = -1;
-        let groupIndex = -1;
-        let channelIndex = -1;
+        if(!req.body) return res.sendStatus(400);
 
-        if(channelName == 'main') {
-            res.json({
-                'delete': false,
-                'comment': 'cannot delete main channel'
-            });
-        } else {
-            // open file
-            fs.readFile(__dirname + '/../users.json', (err, data) => {
-                if(err) {
-                    console.log(err);
-                    res.json({'err': err});
-                }
-                else {
-                    let users = JSON.parse(data);
+        dbSettings.MongoClient.connect(dbSettings.url, 
+        {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+        function(err, client) {
+            if(err) throw new Error(err);
 
-                    //checks if user is admin of group
-                    for(user in users.users) {
-                        if(users.users[user].username == adminUser) {
-                            for(group in users.users[user].adminGroupList){
-                                if(users.users[user].adminGroupList[group]
-                                    == groupName) {
-                                        adminPriviledge = true;
-                                        break;
+            const db = client.db(dbSettings.dbName);
+            const collection = db.collection('users');
+            const group = req.body.groupName;
+            const channel = req.body.channelName;
+            let adminid = new dbSettings.ObjectID(req.body.adminid);
+            let userid = new dbSettings.ObjectID(req.body.userid);
+
+            // check if admin has group in adminGroupList
+            collection.find({
+                $and: [
+                    { _id: adminid },
+                    { adminGroupList: group },
+                    { groupList: {$elemMatch: {
+                        groupName: group, 
+                        channels: channel
+                    }}}
+                ]
+            })
+            .count((err, count) => {
+                if(err) return res.send(err);
+
+                if(count === 1) {
+                    // check if user is in channel
+                    collection.find({
+                        $and: [
+                            { _id: userid },
+                            { groupList: {$elemMatch: {
+                                groupName: group, 
+                                channels: channel
+                            }}}
+                        ]
+                    })
+                    .count((err, count) => {
+                        if(err) return res.send(err);
+
+                        if(count === 1) {
+                            // delete channel
+                            collection.updateOne(
+                                {_id: userid, "groupList.groupName": group},
+                                { $pull: {
+                                    "groupList.$.channels": channel
+                                }},
+                                (err, records) => {
+                                    if(err) return res.send(err);
+
+                                    if(records.result.nModified) {
+                                        return res.send({'delete': true});
+                                    } else {
+                                        return res.send({
+                                            'delete': false, 
+                                            'comment': 'error adding to database'
+                                        });
                                     }
-                            }
-                            break;
-                        }
-                    }
-
-                    if(adminPriviledge) {
-                        // find user
-                        for(user in users.users) {
-                            if(users.users[user].username == delUser) {
-                                userIndex = user;
-
-                                //find group
-                                for(group in users.users[user].groupList) {
-                                    if(users.users[user].groupList[group].
-                                        groupName == groupName) {
-                                            groupIndex = group;
-
-                                            //find channel
-                                            for(channel in users.users[user].
-                                                groupList[group].channels) {
-                                                    if(users.users[user].
-                                                        groupList[group].
-                                                        channels[channel] == 
-                                                        channelName) {
-                                                            channelIndex = channel;
-                                                    }
-                                                }
-
-                                        }
                                 }
-                            }
-                        }
-
-                        if(channelIndex >= 0 && groupIndex >= 0 && userIndex >= 0) {
-                            // delete channel from user
-                            users.users[userIndex].groupList[groupIndex].channels.
-                            splice(channelIndex, 1);
-
-                            // write to file
-                            fs.writeFile(__dirname + '/../users.json',
-                            JSON.stringify(users), err => {
-                                if(err) {
-                                    console.log(err);
-                                    res.json({'err': err});
-                                } else{
-                                    res.json({'delete': true});
-                                }
-                            });
+                            );
                         } else {
-                            res.json({
-                                'delete': false,
-                                'comment': 'cannot delete channel from user'
+                            return res.send({
+                                'delete': false, 
+                                'comment': 'user is not in channel'
                             });
                         }
-                    } else {
-                        res.json({
-                            'delete': false,
-                            'comment': 'admin does not have priviledge'
-                        });
-                    }
+                    });
+                } else {
+                    return res.send({
+                        'delete': false, 
+                        'comment': 'admin doesnt exist or doesnt have permission'
+                    });
                 }
             });
-        }
+        });
     });
 }
