@@ -2,102 +2,86 @@
  * Adds user to a group if adminUser is the admin of the group name
  */
 
-module.exports = function(app, fs) {
+module.exports = function(app) {
+    const dbSettings = require('../db-settings');
+
     app.put('/api/add-user-to-group', (req, res) => {
-        let { adminUser, addUser, groupName } = req.body;
-        let foundAddUser = false;
-        let adminPriviledge = false;
-        let groupExists = false;
-        let userIndex;
+        if(!req.body) return res.sendStatus(400);
 
-        // open file
-        fs.readFile(__dirname + '/../users.json', (err, data) => {
-            if(err) {
-                console.log(err);
-                res.json({'err': err});
-            }
-            else {
-                // checks if addUser exsits
-                let users = JSON.parse(data);
+        dbSettings.MongoClient.connect(dbSettings.url, 
+        {poolSize:10,useNewUrlParser: true, useUnifiedTopology: true},
+        function(err, client) {
+            if(err) throw new Error(err);
 
-                for(user in users.users) {
-                    if(users.users[user].username == addUser) {
-                        foundAddUser = true;
-                        userIndex = user;
-                        break;
-                    }
-                }
+            const db = client.db(dbSettings.dbName);
+            const collection = db.collection('users');
+            const group = req.body.groupName;
+            let adminid = new dbSettings.ObjectID(req.body.adminid);
+            let userid = new dbSettings.ObjectID(req.body.userid);
 
-                if(foundAddUser) {
-                    // check if adminUser has groupName in there admin list
-                    for(user in users.users) {
-                        if(users.users[user].username == adminUser) {
-                            for(group in users.users[user].adminGroupList){
-                                if(users.users[user].adminGroupList[group]
-                                    == groupName) {
-                                        adminPriviledge = true;
-                                        break;
-                                    }
-                            }
-                            break;
-                        }
-                    }
+            // check if admin has group in adminGroupList
+            collection.find({
+                $and: [
+                    { _id: adminid },
+                    { adminGroupList: group }
+                ]
+            })
+            .count((err, count) => {
+                if(err) return res.send(err);
 
-                    
-                    if(adminPriviledge) {
-                        //check if user is a group memeber
+                if(count === 1) {
+                    collection.find({
+                        $and: [
+                            { _id: userid },
+                            { groupList: {$elemMatch: {groupName: group}} }
+                        ]
+                    })
+                    .count((err, count) => {
+                        if(err) return res.send(err);
 
-                        for(group in users.users[userIndex].groupList) {
-                            if(users.users[userIndex].groupList[group].groupName 
-                                == groupName) {
-                                    groupExists = true;
-                                    break;
-                                }
-                        }
-
-                        if(!groupExists) {
+                        if(count === 0) {
                             // add user to group
-                            const group = {
-                                'groupName': groupName,
-                                'channels' : [
-                                    'main'
+                            let groupItem = {
+                                groupName: group,
+                                channels: [
+                                    "main"
                                 ]
-                            }
-                            
-                            users.users[userIndex].groupList.push(group);
-                            
+                            };
 
-                            //write to file
-                            fs.writeFile(__dirname + '/../users.json',
-                            JSON.stringify(users), err => {
-                                if(err) {
-                                    console.log(err);
-                                    res.json({'err': err});
-                                } else{
-                                    res.json({'add': true});
+                            collection.updateOne(
+                                { _id: userid },
+                                { $push:
+                                    {
+                                        groupList: groupItem
+                                    }
+                                },
+                                (err, records) => {
+                                    if(err) return res.send(err);
+
+                                    if(records.result.nModified) {
+                                        return res.send({'add': true});
+                                    } else {
+                                        return res.send({
+                                            'add': false, 
+                                            'comment': 'user does not exist'
+                                        });
+                                    }
                                 }
-                            });
-                        } 
-                        // well this is a mess
-                        else {
-                            res.json({
-                                'add': false,
-                                'comment': 'user is already a memeber'
+                            );
+                        } else {
+                            return res.send({
+                                'add': false, 
+                                'comment': 'user is already memeber'
                             });
                         }
-                    } else {
-                        res.json({
-                            'add': false,
-                            'comment': 'admin does not have priviledge'
-                        });
-                    }
+                    });        
                 } else {
-                    res.json({
-                        'add': false,
-                        'comment': 'user does not exist'
+                    return res.send({
+                        'add': false, 
+                        'comment': 'admin doesnt exist or doesnt have permission'
                     });
                 }
-            }
+            });
         });
     });
 }
