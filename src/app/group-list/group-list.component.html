@@ -7,7 +7,7 @@
     {{group}}
     <button (click)="presentModal('Delete',group)" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">DELETE USER</button>
     <button (click)="presentModal('Add',group)" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">ADD USER</button>
-    <button class="btn btn-light float-right">CHANNELS</button>
+    <button class="btn btn-light float-right" [routerLink]="['/channel-list', group]">CHANNELS</button>
     <button (click)="deleteGroup(group)" class="btn btn-light float-right">DELETE</button>
   </button>
 </ul>

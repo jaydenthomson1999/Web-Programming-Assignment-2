@@ -3,25 +3,6 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable } from 'rxjs';
 import { UserService } from '../user/user.service';
 
-interface Delete {
-  delete: boolean;
-}
-
-interface Put {
-  add: boolean;
-}
-
-interface GetGroups {
-  ok: boolean;
-  groupList: any[];
-  adminGroupList: any[];
-}
-
-interface GetUsers {
-  ok: boolean;
-  users: any;
-}
-
 @Component({
   selector: 'app-group-list',
   templateUrl: './group-list.component.html',
@@ -78,7 +59,7 @@ export class GroupListComponent implements OnInit {
     );
   }
 
-  selectUser(user: string) {
+  selectUser(user) {
     this.selectedUser = user;
   }
 
@@ -159,42 +140,6 @@ export class GroupListComponent implements OnInit {
   // deletes user from a group in backend
   private delUserGroup(adminUser, delUser, groupName) {
     this.userService.delUserFromGroup(adminUser._id, delUser._id, groupName)
-    .subscribe(
-      res => {
-        if (res.delete) {
-          this.getGroups();
-        } else {
-          alert(res.comment);
-        }
-      },
-      (err: HttpErrorResponse) => {
-        alert(err);
-      }
-    );
-  }
-
-    // adds user to channel in back end
-    private addUserChannel(adminUser, addUser, groupName, channelName) {
-      this.userService.addUserToChannel(adminUser._id, addUser._id, groupName,
-                                        channelName)
-      .subscribe(
-        res => {
-          if (res.add) {
-            this.getGroups();
-          } else {
-            alert(res.comment);
-          }
-        },
-        (err: HttpErrorResponse) => {
-          alert(err);
-        }
-      );
-    }
-
-  // deletes user from channel in backend
-  private delUserChannel(adminUser, delUser, groupName, channelName) {
-    this.userService.delUserFromChannel(adminUser._id, delUser._id, groupName,
-                                      channelName)
     .subscribe(
       res => {
         if (res.delete) {

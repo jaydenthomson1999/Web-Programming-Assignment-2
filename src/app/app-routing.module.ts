@@ -5,13 +5,15 @@ import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { UserAddComponent } from './user-add/user-add.component';
 import { GroupListComponent } from './group-list/group-list.component';
+import { ChannelListComponent } from './channel-list/channel-list.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'chat-room', component: ChatRoomComponent },
   { path: 'user-list', component: UserListComponent },
   { path: 'user-add', component: UserAddComponent},
-  { path: 'group-list', component: GroupListComponent }
+  { path: 'group-list', component: GroupListComponent },
+  { path: 'channel-list/:groupName', component: ChannelListComponent }
 ];
 
 @NgModule({

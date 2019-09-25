@@ -1,3 +1,34 @@
-<p>
-  channel-list works!
-</p>
+<nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1">Channel List</span>
+</nav>
+
+<ul class ="list-group">
+    <button class="list-group-item list-group-item-action" *ngFor="let channel of channels">
+      {{channel}}
+      <button (click)="presentModal('Delete',channel)" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">DELETE USER</button>
+      <button (click)="presentModal('Add',channel)" class="btn btn-light float-right" data-toggle="modal" data-target="#apiModal">ADD USER</button>
+    </button>
+  </ul>
+
+  <!-- Modal -->
+<div class="modal fade" id="apiModal" tabindex="-1" role="dialog" aria-labelledby="apiModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="apiModalLabel">{{operation}} User</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="list-group">
+              <button (click)="selectUser(user)" *ngFor="let user of modalList" type="button" class="list-group-item list-group-item-action">{{user.username}}</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button (click)="modalConfirm()" type="button" class="btn btn-primary" data-dismiss="modal">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
