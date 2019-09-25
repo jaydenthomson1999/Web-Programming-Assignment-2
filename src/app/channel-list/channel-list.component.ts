@@ -16,7 +16,7 @@ export class ChannelListComponent implements OnInit {
   private selectedUser: any;
   private selectedChannel;
 
-  constructor(private userService: UserService, private route: ActivatedRoute) {
+  constructor(public userService: UserService, private route: ActivatedRoute) {
     this.groupName = this.route.snapshot.paramMap.get('groupName');
     this.getChannels();
   }
@@ -129,37 +129,37 @@ export class ChannelListComponent implements OnInit {
 
   // adds user to channel in back end
   private addUserChannel(adminUser, addUser, groupName, channelName) {
-  this.userService.addUserToChannel(adminUser._id, addUser._id, groupName,
-                                    channelName)
-  .subscribe(
-    res => {
-      if (res.add) {
-        this.getChannels();
-      } else {
-        alert(res.comment);
+    this.userService.addUserToChannel(adminUser._id, addUser._id, groupName,
+                                      channelName)
+    .subscribe(
+      res => {
+        if (res.add) {
+          this.getChannels();
+        } else {
+          alert(res.comment);
+        }
+      },
+      (err: HttpErrorResponse) => {
+        alert(err);
       }
-    },
-    (err: HttpErrorResponse) => {
-      alert(err);
-    }
-  );
-}
+    );
+  }
 
-// deletes user from channel in backend
-private delUserChannel(adminUser, delUser, groupName, channelName) {
-  this.userService.delUserFromChannel(adminUser._id, delUser._id, groupName,
-                                    channelName)
-  .subscribe(
-    res => {
-      if (res.delete) {
-        this.getChannels();
-      } else {
-        alert(res.comment);
+  // deletes user from channel in backend
+  private delUserChannel(adminUser, delUser, groupName, channelName) {
+    this.userService.delUserFromChannel(adminUser._id, delUser._id, groupName,
+                                      channelName)
+    .subscribe(
+      res => {
+        if (res.delete) {
+          this.getChannels();
+        } else {
+          alert(res.comment);
+        }
+      },
+      (err: HttpErrorResponse) => {
+        alert(err);
       }
-    },
-    (err: HttpErrorResponse) => {
-      alert(err);
-    }
-  );
-}
+    );
+  }
 }

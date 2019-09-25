@@ -10,12 +10,17 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   private username = '';
   private password = '';
+  private loginError = false;
 
   constructor(private loginService: LoginServiceService,
               private router: Router
   ) { }
 
   ngOnInit() {
+    if (sessionStorage.getItem('user') != null) {
+      // redirect
+      this.router.navigateByUrl('/chat-room');
+    }
   }
 
   // fires when user confirms login form
@@ -25,6 +30,8 @@ export class LoginComponent implements OnInit {
       if (sessionStorage.getItem('user') != null) {
         // redirect
         this.router.navigateByUrl('/chat-room');
+      } else {
+        this.loginError = true;
       }
     });
   }

@@ -5,7 +5,6 @@ const cors = require('cors');
 const http = require('http').Server(app);
 const server = require('./listen.js');
 const bodyParser = require('body-parser');
-const fs = require('fs');
 
 //Define port used for the server
 const PORT = 3000;
@@ -14,7 +13,6 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
 
 require(__dirname + '/api/login.js')(app); 
 

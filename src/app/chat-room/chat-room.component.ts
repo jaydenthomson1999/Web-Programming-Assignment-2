@@ -4,16 +4,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UserService } from '../user/user.service';
 
-interface Put {
-  add: boolean;
-}
-
-interface Get {
-  ok: boolean;
-  groupList: any[];
-  adminGroupList: any[];
-}
-
 @Component({
   selector: 'app-chat-room',
   templateUrl: './chat-room.component.html',
@@ -30,12 +20,11 @@ export class ChatRoomComponent implements OnInit {
   private channelList: any[];
   private adminGroupList: any[];
 
-  private addGroupUrl = 'http://localhost:3000/api/add-group';
-  private getGroupUrl = 'http://localhost:3000/api/get-groups';
-  private addChannelUrl = 'http://localhost:3000/api/add-channel';
-
   private selectedGroup: string;
   private selectedChannel: string;
+
+  private ioConnection: any;
+  private messageIn: string;
 
   constructor(private router: Router,
               private http: HttpClient,
