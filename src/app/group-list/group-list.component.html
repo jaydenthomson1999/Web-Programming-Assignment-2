@@ -33,7 +33,7 @@
         </div>
         <div class="modal-body">
           <div class="list-group">
-              <button (click)="selectUser(user)" *ngFor="let user of modalList" type="button" class="list-group-item list-group-item-action">{{user}}</button>
+              <button (click)="selectUser(user)" *ngFor="let user of modalList" type="button" class="list-group-item list-group-item-action">{{user.username}}</button>
           </div>
         </div>
         <div class="modal-footer">
