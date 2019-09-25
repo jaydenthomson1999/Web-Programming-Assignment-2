@@ -35,3 +35,5 @@ require(__dirname + '/api/del-user-from-channel.js')(app);
 
 //Start server listening for requests
 server.listen(http, PORT);
+
+module.exports = app;

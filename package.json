@@ -7,7 +7,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "integration-test": "mocha ./server/integration-test.js --timeout 10000"
   },
   "private": true,
   "dependencies": {
@@ -22,10 +23,13 @@
     "@ng-bootstrap/ng-bootstrap": "^2.0.0-alpha.0",
     "@ng-bootstrap/schematics": "^2.0.0-alpha.1",
     "bootstrap": "^4.3.1",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "component": "^1.1.0",
     "core-js": "^2.5.4",
     "cors": "^2.8.5",
     "jquery": "^3.4.1",
+    "mocha": "^6.2.0",
     "mongodb": "^3.3.2",
     "popper": "^1.0.1",
     "popper.js": "^1.15.0",
