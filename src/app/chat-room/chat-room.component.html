@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div id="navbarSupportedContent">
       <ul class="navbar-nav">
-          <li class="navbar-brand mb-0 h1">{{user.username}}</li>
+          <li id='title' class="navbar-brand mb-0 h1">Chatroom</li>
+          <li class="navbar-brand mb-0 h3">{{user.username}}</li>
           <div class="form-inline pr-3">
               <label for="exampleFormControlSelect1">Group</label>
               <select [(ngModel)]="selectedGroup" (change)="groupSelected()" class="form-control ml-1" id="exampleFormControlSelect1">
@@ -21,7 +22,7 @@
               <button (click)="gotoGroups()" type="button" class="btn btn-outline-dark float-right btn">My Groups</button>
               <button (click)="goto_users()" type="button" class="btn btn-outline-dark btn ml-3">Users</button>
           </div>
-          <button (click)="logout()" type="button" class="btn btn-outline-dark float-right btn">Logout</button>
+          <button (click)="logout()" id="logout" type="button" class="btn btn-outline-dark float-right btn">Logout</button>
       </ul>
     </div>
 </nav>
