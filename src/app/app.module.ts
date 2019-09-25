@@ -10,6 +10,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserListComponent } from './user-list/user-list.component';
 import { UserAddComponent } from './user-add/user-add.component';
 import { GroupListComponent } from './group-list/group-list.component';
+import { ChannelListComponent } from './channel-list/channel-list.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { GroupListComponent } from './group-list/group-list.component';
     ChatRoomComponent,
     UserListComponent,
     UserAddComponent,
-    GroupListComponent
+    GroupListComponent,
+    ChannelListComponent
   ],
   imports: [
     BrowserModule,
