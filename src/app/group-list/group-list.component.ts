@@ -24,6 +24,7 @@ export class GroupListComponent implements OnInit {
 
   presentModal(operation: string, groupName: string) {
     this.operation = operation;
+    this.selectUser = undefined;
     this.modalList = [];
 
     this.userService.getUser().subscribe(
