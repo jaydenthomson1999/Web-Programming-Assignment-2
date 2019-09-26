@@ -4,27 +4,16 @@ import { Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../user/user.service';
 
-interface Get {
-  ok: boolean;
-  users: any;
-}
-
-interface Delete {
-  delete: boolean;
-}
-
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
 export class UserListComponent implements OnInit {
-  private getUrl = 'http://localhost:3000/api/get-users';
-  private delUrl = 'http://localhost:3000/api/del-user';
   private loggedUser;
   private group;
   private channel;
-  private users;
+  users;
 
   constructor(private http: HttpClient,
               private router: Router,
