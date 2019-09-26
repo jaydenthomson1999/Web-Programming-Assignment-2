@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GroupListComponent } from './group-list.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgxLoadingModule } from 'ngx-loading';
 
 const superUser = {
   user: {
@@ -27,7 +28,7 @@ describe('GroupListComponent', () => {
     spyOn(window.sessionStorage, 'getItem').and.callFake(fakeStorage.getItem);
 
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, NgxLoadingModule.forRoot({})],
       declarations: [ GroupListComponent ]
     })
     .compileComponents();

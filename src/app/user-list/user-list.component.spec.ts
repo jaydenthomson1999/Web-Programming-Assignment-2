@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UserListComponent } from './user-list.component';
+import { NgxLoadingModule } from 'ngx-loading';
 
 const superUser = {
   user: {
@@ -29,7 +30,7 @@ describe('UserListComponent', () => {
   beforeEach(async(() => {
     spyOn(window.sessionStorage, 'getItem').and.callFake(fakeStorage.getItem);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule, NgxLoadingModule.forRoot({})],
       declarations: [ UserListComponent ]
     })
     .compileComponents();

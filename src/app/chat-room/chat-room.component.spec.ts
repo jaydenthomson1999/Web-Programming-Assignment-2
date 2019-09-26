@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ChatRoomComponent } from './chat-room.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgxLoadingModule } from 'ngx-loading';
 
 const superUser = {
   user: {
@@ -32,7 +33,7 @@ describe('ChatRoomComponent', () => {
     spyOn(window.sessionStorage, 'removeItem').and.callFake(fakeStorage.removeItem);
 
     TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [ FormsModule, RouterTestingModule, HttpClientTestingModule, NgxLoadingModule.forRoot({})],
       declarations: [ ChatRoomComponent ]
     })
     .compileComponents();

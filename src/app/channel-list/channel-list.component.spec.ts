@@ -5,6 +5,7 @@ import { ChannelListComponent } from './channel-list.component';
 import { RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
+import { NgxLoadingModule } from 'ngx-loading';
 
 const superUser = {
   user: {
@@ -30,7 +31,7 @@ describe('ChannelListComponent', () => {
     spyOn(window.sessionStorage, 'getItem').and.callFake(fakeStorage.getItem);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterModule.forRoot([])],
+      imports: [HttpClientTestingModule, RouterModule.forRoot([]), NgxLoadingModule.forRoot({})],
       declarations: [ ChannelListComponent ]
     })
     .compileComponents();

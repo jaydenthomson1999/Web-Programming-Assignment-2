@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { UserAddComponent } from './user-add.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NgxLoadingModule } from 'ngx-loading';
 
 describe('UserAddComponent', () => {
   let component: UserAddComponent;
@@ -10,7 +11,7 @@ describe('UserAddComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ FormsModule, HttpClientTestingModule, RouterTestingModule],
+      imports: [ FormsModule, HttpClientTestingModule, RouterTestingModule, NgxLoadingModule.forRoot({})],
       declarations: [ UserAddComponent ]
     })
     .compileComponents();

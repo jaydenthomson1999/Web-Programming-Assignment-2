@@ -4,6 +4,7 @@ import { LoginComponent } from './login.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import {BrowserModule, By} from '@angular/platform-browser';
+import { NgxLoadingModule } from 'ngx-loading';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -11,7 +12,7 @@ describe('LoginComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ FormsModule, HttpClientTestingModule, RouterTestingModule],
+      imports: [ FormsModule, HttpClientTestingModule, RouterTestingModule, NgxLoadingModule.forRoot({})],
       declarations: [ LoginComponent ]
     })
     .compileComponents();
