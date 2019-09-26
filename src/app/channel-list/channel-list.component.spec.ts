@@ -17,9 +17,9 @@ const superUser = {
 };
 
 const fakeStorage = {
-  getItem(key) {
-    return JSON.stringify(superUser[key]);
-}
+    getItem(key) {
+      return JSON.stringify(superUser[key]);
+  }
 };
 
 describe('ChannelListComponent', () => {
