@@ -24,8 +24,8 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="list-group">
-              <button (click)="selectUser(user)" *ngFor="let user of modalList" type="button" class="list-group-item list-group-item-action">{{user.username}}</button>
+          <div class="list-group" *ngFor="let user of modalList">
+              <button (click)="selectUser(user)" type="button" class="list-group-item list-group-item-action">{{user.username}}</button>
           </div>
         </div>
         <div class="modal-footer">
@@ -35,3 +35,4 @@
       </div>
     </div>
   </div>
+  <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" [template]="customLoadingTemplate"></ngx-loading>

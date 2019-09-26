@@ -15,6 +15,7 @@ export class ChannelListComponent implements OnInit {
   private modalList: string[] = [];
   private selectedUser: any;
   private selectedChannel;
+  public loading = false;
 
   constructor(public userService: UserService, private route: ActivatedRoute) {
     this.groupName = this.route.snapshot.paramMap.get('groupName');
@@ -31,8 +32,10 @@ export class ChannelListComponent implements OnInit {
     this.modalList = [];
     this.selectedChannel = channelName;
 
+    this.loading = true;
     this.userService.getUser().subscribe(
       res => {
+        this.loading = false;
         // remove admin user
         const id = JSON.parse(sessionStorage.getItem('user'))._id;
         const adminIndex = res.findIndex((user) => user._id === id);
@@ -78,6 +81,7 @@ export class ChannelListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );
@@ -109,9 +113,11 @@ export class ChannelListComponent implements OnInit {
 
   // gets channels of the signed in admin
   getChannels() {
+    this.loading = true;
     this.userService.getGroup(JSON.parse(sessionStorage.getItem('user'))._id)
     .subscribe(
       res => {
+        this.loading = false;
         if (res.ok) {
           // this.adminGroupList = res.adminGroupList;
           const adminIndex = res.adminGroupList.findIndex((group) => group === this.groupName);
@@ -126,6 +132,7 @@ export class ChannelListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );
@@ -133,10 +140,12 @@ export class ChannelListComponent implements OnInit {
 
   // adds user to channel in back end
   private addUserChannel(adminUser, addUser, groupName, channelName) {
+    this.loading = true;
     this.userService.addUserToChannel(adminUser._id, addUser._id, groupName,
                                       channelName)
     .subscribe(
       res => {
+        this.loading = false;
         if (res.add) {
           this.getChannels();
         } else {
@@ -144,6 +153,7 @@ export class ChannelListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err);
       }
     );
@@ -151,10 +161,12 @@ export class ChannelListComponent implements OnInit {
 
   // deletes user from channel in backend
   private delUserChannel(adminUser, delUser, groupName, channelName) {
+    this.loading = true;
     this.userService.delUserFromChannel(adminUser._id, delUser._id, groupName,
                                       channelName)
     .subscribe(
       res => {
+        this.loading = false;
         if (res.delete) {
           this.getChannels();
         } else {
@@ -162,6 +174,7 @@ export class ChannelListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err);
       }
     );

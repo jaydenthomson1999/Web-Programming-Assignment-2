@@ -19,6 +19,7 @@ export class UserAddComponent implements OnInit {
   private password: string;
   private email: string;
   private type: string;
+  public loading = false;
 
   public loginError = {
     main: false,
@@ -42,6 +43,8 @@ export class UserAddComponent implements OnInit {
 
   // add user to backend list
   add_user() {
+    this.loading = true;
+
     if (this.username === undefined ||
         this.password === undefined ||
         this.email === undefined ||
@@ -61,6 +64,7 @@ export class UserAddComponent implements OnInit {
 
     this.userService.addUser(user).subscribe(
       res => {
+        this.loading = false;
         if (res.add) {
           this.go_back();
         } else {
@@ -68,6 +72,7 @@ export class UserAddComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );

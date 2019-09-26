@@ -14,3 +14,4 @@
       <button *ngIf="loggedUser.type == 'super'" (click)="delUser(user._id)" type="button" class="btn btn-light float-right">DELETE</button>
     </li>
 </ul>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" [template]="customLoadingTemplate"></ngx-loading>

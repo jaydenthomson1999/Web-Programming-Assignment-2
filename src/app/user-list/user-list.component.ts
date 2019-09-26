@@ -14,6 +14,7 @@ export class UserListComponent implements OnInit {
   private group;
   private channel;
   users;
+  public loading = false;
 
   constructor(private http: HttpClient,
               private router: Router,
@@ -40,11 +41,14 @@ export class UserListComponent implements OnInit {
 
   // get users from backend
   get_users() {
+    this.loading = true;
     this.userService.getUser().subscribe(
       res => {
+        this.loading = false;
         this.users = res;
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );
@@ -52,8 +56,10 @@ export class UserListComponent implements OnInit {
 
   // del user from backend
   delUser(userid: string) {
+    this.loading = true;
     this.userService.delUser(userid).subscribe(
       res => {
+        this.loading = false;
         if (res.delete) {
           this.get_users();
         } else {
@@ -61,6 +67,7 @@ export class UserListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );

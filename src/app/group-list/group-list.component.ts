@@ -15,6 +15,8 @@ export class GroupListComponent implements OnInit {
   private selectedUser: any;
   private selectedGroup;
 
+  public loading = false;
+
   constructor(private http: HttpClient, private userService: UserService) {
     this.getGroups();
   }
@@ -23,12 +25,14 @@ export class GroupListComponent implements OnInit {
   }
 
   presentModal(operation: string, groupName: string) {
+    this.loading = true;
     this.operation = operation;
-    this.selectUser = undefined;
+    this.selectedUser = undefined;
     this.modalList = [];
 
     this.userService.getUser().subscribe(
       res => {
+        this.loading = false;
         const id = JSON.parse(sessionStorage.getItem('user'))._id;
         const adminIndex = res.findIndex((user) => user._id === id);
         res.splice(adminIndex, 1);
@@ -55,12 +59,13 @@ export class GroupListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );
   }
 
-  selectUser(user) {
+  selectUser(user: any) {
     this.selectedUser = user;
   }
 
@@ -86,9 +91,11 @@ export class GroupListComponent implements OnInit {
 
   // performs get groups request
   getGroups() {
+    this.loading = true;
     this.userService.getGroup(JSON.parse(sessionStorage.getItem('user'))._id)
     .subscribe(
       res => {
+        this.loading = false;
         if (res.ok) {
           this.adminGroupList = res.adminGroupList;
         } else {
@@ -96,6 +103,7 @@ export class GroupListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );
@@ -103,12 +111,14 @@ export class GroupListComponent implements OnInit {
 
   // performs delete groups request
   deleteGroup(groupName: string) {
+    this.loading = true;
     this.userService.delGroup(
       JSON.parse(sessionStorage.getItem('user'))._id,
       groupName
     )
     .subscribe(
       res => {
+        this.loading = false;
         if (res.delete) {
           this.getGroups();
         } else {
@@ -116,6 +126,7 @@ export class GroupListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );
@@ -123,9 +134,11 @@ export class GroupListComponent implements OnInit {
 
   // adds user to group in backend
   private addUserGroup(adminUser, addUser, groupName) {
+    this.loading = true;
     this.userService.addUserToGroup(adminUser._id, addUser._id, groupName)
     .subscribe(
       res => {
+        this.loading = false;
         if (res.add) {
           this.getGroups();
         } else {
@@ -133,6 +146,7 @@ export class GroupListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err);
       }
     );
@@ -140,9 +154,11 @@ export class GroupListComponent implements OnInit {
 
   // deletes user from a group in backend
   private delUserGroup(adminUser, delUser, groupName) {
+    this.loading = true;
     this.userService.delUserFromGroup(adminUser._id, delUser._id, groupName)
     .subscribe(
       res => {
+        this.loading = false;
         if (res.delete) {
           this.getGroups();
         } else {
@@ -150,6 +166,7 @@ export class GroupListComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err);
       }
     );
