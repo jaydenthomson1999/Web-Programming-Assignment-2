@@ -20,7 +20,7 @@ export class UserAddComponent implements OnInit {
   private email: string;
   private type: string;
 
-  private loginError = {
+  public loginError = {
     main: false,
     username: false,
     password: false,

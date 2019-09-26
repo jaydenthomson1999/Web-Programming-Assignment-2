@@ -27,8 +27,11 @@ describe('UserAddComponent', () => {
   });
 
   it('should throw missing items error', () => {
-    spyOn(window, 'alert');
     component.add_user();
-    expect(window.alert).toHaveBeenCalledWith('Missing Items in Form');
+    expect(component.loginError.main).toBe(true);
+    expect(component.loginError.username).toBe(true);
+    expect(component.loginError.password).toBe(true);
+    expect(component.loginError.email).toBe(true);
+    expect(component.loginError.type).toBe(true);
   });
 });
