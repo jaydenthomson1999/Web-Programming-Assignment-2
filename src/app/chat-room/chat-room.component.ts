@@ -26,6 +26,8 @@ export class ChatRoomComponent implements OnInit {
   private ioConnection: any;
   private messageIn: string;
 
+  public loading = false;
+
   constructor(private router: Router,
               private http: HttpClient,
               private userService: UserService) {
@@ -56,11 +58,13 @@ export class ChatRoomComponent implements OnInit {
 
   // adds group or channel
   modalAdd() {
+    this.loading = true;
     if (this.modalTitle === 'Add Group') {
       this.userService.addGroup(
         JSON.parse(sessionStorage.getItem('user'))._id, this.modalInput)
         .subscribe(
           res => {
+            this.loading = false;
             if (res.add) {
               this.get_groups();
             } else {
@@ -68,6 +72,7 @@ export class ChatRoomComponent implements OnInit {
             }
           },
           (err: HttpErrorResponse) => {
+            this.loading = false;
             alert(err.error);
           }
         );
@@ -78,6 +83,7 @@ export class ChatRoomComponent implements OnInit {
         this.modalInput
       ).subscribe(
         res => {
+          this.loading = false;
           if (res.add) {
             this.get_groups();
           } else {
@@ -85,6 +91,7 @@ export class ChatRoomComponent implements OnInit {
           }
         },
         (err: HttpErrorResponse) => {
+          this.loading = false;
           alert(err.error);
         }
       );
@@ -93,9 +100,11 @@ export class ChatRoomComponent implements OnInit {
 
   // uses get request to update groupList and adminGroup list
   get_groups() {
+    this.loading = true;
     this.userService.getGroup(JSON.parse(sessionStorage.getItem('user'))._id)
     .subscribe(
       res => {
+        this.loading = false;
         if (res.ok) {
           this.adminGroupList = res.adminGroupList;
           this.groupList = res.groupList;
@@ -104,6 +113,7 @@ export class ChatRoomComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse) => {
+        this.loading = false;
         alert(err.error);
       }
     );

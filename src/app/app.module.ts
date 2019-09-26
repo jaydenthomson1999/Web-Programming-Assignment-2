@@ -11,7 +11,7 @@ import { UserListComponent } from './user-list/user-list.component';
 import { UserAddComponent } from './user-add/user-add.component';
 import { GroupListComponent } from './group-list/group-list.component';
 import { ChannelListComponent } from './channel-list/channel-list.component';
-
+import { NgxLoadingModule } from 'ngx-loading';
 
 @NgModule({
   declarations: [
@@ -28,7 +28,8 @@ import { ChannelListComponent } from './channel-list/channel-list.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    NgxLoadingModule.forRoot({})
   ],
   providers: [],
   bootstrap: [AppComponent]
