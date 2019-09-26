@@ -12,7 +12,6 @@ let testData = {
     email: "email",
     type: "basic"
 };
-let domain = 'http://localhost:3000';
 let testID;
 let superID;
 let testGroup = 'test';
