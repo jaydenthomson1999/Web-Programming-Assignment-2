@@ -24,6 +24,7 @@ export class ChannelListComponent implements OnInit {
   ngOnInit() {
   }
 
+  // used to show modal to the user and gets all users that can be added/deleted
   presentModal(operation: string, channelName: string) {
     this.operation = operation;
     this.selectedUser = undefined;
@@ -82,10 +83,12 @@ export class ChannelListComponent implements OnInit {
     );
   }
 
+  // changes the selected user on change event
   selectUser(user) {
     this.selectedUser = user;
   }
 
+  // performs user operation when they press the confirm button
   modalConfirm() {
     if (this.operation === 'Add') {
       this.addUserChannel(JSON.parse( sessionStorage.getItem('user')),
@@ -104,6 +107,7 @@ export class ChannelListComponent implements OnInit {
     }
   }
 
+  // gets channels of the signed in admin
   getChannels() {
     this.userService.getGroup(JSON.parse(sessionStorage.getItem('user'))._id)
     .subscribe(

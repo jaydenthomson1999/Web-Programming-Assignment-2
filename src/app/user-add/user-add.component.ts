@@ -20,6 +20,14 @@ export class UserAddComponent implements OnInit {
   private email: string;
   private type: string;
 
+  private loginError = {
+    main: false,
+    username: false,
+    password: false,
+    email: false,
+    type: false
+  };
+
   constructor(private router: Router,
               private http: HttpClient,
               private userService: UserService) {
@@ -38,7 +46,7 @@ export class UserAddComponent implements OnInit {
         this.password === undefined ||
         this.email === undefined ||
         this.type === undefined) {
-        alert('Missing Items in Form');
+        this.formError();
         return;
     }
 
@@ -68,5 +76,22 @@ export class UserAddComponent implements OnInit {
   // goes back when user
   go_back() {
     this.router.navigateByUrl('/user-list');
+  }
+
+  // used to prompt user for appropriate fields
+  formError() {
+    this.loginError.main = true;
+
+    if (this.username === undefined) { this.loginError.username = true; }
+    else { this.loginError.username = false; }
+
+    if (this.password === undefined) { this.loginError.password = true; }
+    else { this.loginError.password = false; }
+
+    if (this.email === undefined) { this.loginError.email = true; }
+    else { this.loginError.email = false; }
+
+    if (this.type === undefined) { this.loginError.type = true; }
+    else { this.loginError.type = false; }
   }
 }

@@ -1,3 +1,7 @@
+/*
+    integration test used for testing api requests for correct responses
+*/
+
 const assert = require('assert');
 const app = require('./server');
 const chai = require('chai');

@@ -1,4 +1,6 @@
-const MongoClient = require('mongodb').MongoClient;
+// keeps all mongo settings in oen file
+
+MongoClient = require('mongodb').MongoClient;
 const url = "mongodb://localhost:27017/";
 const mongodb = require('mongodb');
 const ObjectId = mongodb.ObjectID;
