@@ -108,6 +108,13 @@ export class ChatRoomComponent implements OnInit {
         if (res.ok) {
           this.adminGroupList = res.adminGroupList;
           this.groupList = res.groupList;
+          if (this.groupList.length > 0) {
+            this.selectedGroup = this.groupList[0].groupName;
+            this.groupSelected();
+            if (this.channelList.length > 0) {
+              this.selectedChannel = this.channelList[0];
+            }
+          }
         } else {
           alert(res.comment);
         }
