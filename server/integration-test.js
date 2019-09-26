@@ -183,6 +183,34 @@ describe('Server Integration Test', () => {
     });
 
     describe('/api/add-user-to-group', () => {
+        it('should be able to add a user to a group', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
+
+            chai.request(app)
+            .put('/api/add-user-to-group')
+            .send({adminid: superID, userid: testID, groupName: testGroup})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.add.should.equal(true);
+                done();
+            });
+        });
+
+        it('should not be able to add a user to a group if they are already a memeber', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
+
+            chai.request(app)
+            .put('/api/add-user-to-group')
+            .send({adminid: superID, userid: testID, groupName: testGroup})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.add.should.equal(false);
+                res.body.comment.should.equal('user is already memeber');
+                done();
+            });
+        });
 
     });
 
