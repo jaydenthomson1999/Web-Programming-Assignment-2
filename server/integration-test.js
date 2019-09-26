@@ -215,11 +215,38 @@ describe('Server Integration Test', () => {
     });
 
     describe('/api/add-user-to-channel', () => {
+        it('should be able to add a user to a channel if they are a memeber', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
 
+            chai.request(app)
+            .put('/api/add-user-to-channel')
+            .send({adminid: superID, userid: testID, groupName: testGroup, channelName: testChannel})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.add.should.equal(true);
+                done();
+            });
+        });
+
+        it('should not be able to add a user to a channel if they are already a channel memeber', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
+
+            chai.request(app)
+            .put('/api/add-user-to-channel')
+            .send({adminid: superID, userid: testID, groupName: testGroup, channelName: testChannel})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.add.should.equal(false);
+                res.body.comment.should.equal('user already in channel');
+                done();
+            });
+        });
     });
 
     describe('/api/del-user-from-group', () => {
-
+        
     });
 
     describe('/api/del-user-from-channel', () => {
