@@ -245,12 +245,66 @@ describe('Server Integration Test', () => {
         });
     });
 
-    describe('/api/del-user-from-group', () => {
-        
+    describe('/api/del-user-from-channel', () => {
+        it('should be able to delete a user from a channel if they are a memeber', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
+
+            chai.request(app)
+            .delete('/api/del-user-from-channel')
+            .send({adminid: superID, userid: testID, groupName: testGroup, channelName: testChannel})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.delete.should.equal(true);
+                done();
+            });
+        });
+
+        it('should not be able to delete a user from a channel they are not a memeber of', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
+
+            chai.request(app)
+            .delete('/api/del-user-from-channel')
+            .send({adminid: superID, userid: testID, groupName: testGroup, channelName: testChannel})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.delete.should.equal(false);
+                res.body.comment.should.equal('user is not in channel');
+                done();
+            });
+        });
     });
 
-    describe('/api/del-user-from-channel', () => {
+    describe('/api/del-user-from-group', () => {
+        it('should be able to delete a user from a group', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
 
+            chai.request(app)
+            .delete('/api/del-user-from-group')
+            .send({adminid: superID, userid: testID, groupName: testGroup})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.delete.should.equal(true);
+                done();
+            });
+        });
+
+        it('should not be able to delete a user from a group if they are not a memeber', done => {
+            superID.should.be.a('string');
+            testID.should.be.a('string');
+
+            chai.request(app)
+            .delete('/api/del-user-from-group')
+            .send({adminid: superID, userid: testID, groupName: testGroup})
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.delete.should.equal(false);
+                res.body.comment.should.equal('user is not a group memeber');
+                done();
+            });
+        });
     });
 
     describe('/api/del-group', () => {
